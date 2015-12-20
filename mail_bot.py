@@ -1,26 +1,51 @@
 import imaplib
+import smtplib
+import markdown
 from email.mime.text import MIMEText
 
+
 class MailBot(object):
-    """ Connects to an IMAP email server at the given location. Sends and
-    receives emails from the specified address.
+    """ Connects to an IMAP and an SMTP email server at the given locations.
+    Sends and receives email from the specified address.
     """
 
-    def __init__(self, server, port, address, password):
+    def __init__(self, imap_server, imap_port, smtp_server, smtp_port,
+                 address, password):
         # Connect to the IMAP server
-        self._server = imaplib.IMAP4_SSL(server, port)
+        self._imap_server = imaplib.IMAP4_SSL(imap_server, imap_port)
+        # Connect to the SMTP server
+        self._smtp_server = smtplib.SMTP(smtp_server, smtp_port)
+        self._smtp_server.ehlo()
+        self._smtp_server.starttls()
         # Log in to the email account
-        self._server.login(address, password)
+        self._imap_server.login(address, password)
+        self._smtp_server.login(address, password)
 
-        # TODO test code..
-        self._server.select('Inbox')
-        typ, data = self._server.search(None, 'ALL')
-        for num in data[0].split():
-            typ, data = self._server.fetch(num, '(RFC822)')
-            print('Message %s\n%s\n' % (num, data[0][1]))
-
-        self._server.close()
+        # Save the email address we're logged into
+        self._email_address = address
 
     def __del__(self):
-        # Log out of the email account
-        self._server.logout()
+        # Log out of the email account on the IMAP server
+        self._imap_server.logout()
+        # Disconnect from the SMTP server
+        self._smtp_server.close()
+
+    @property
+    def imap(self):
+        """ The bot's connected IMAP server """
+        return self._imap_server
+
+    def send_message(self, recipients, subject, body_markdown):
+        """ Send a markdown-formatted email to the specified list of addresses
+        """
+
+        # Convert the markdown to HTML
+        body_html = markdown.markdown(body_markdown)
+        # Construct the message as a MIMEText
+        message = MIMEText(body_html, "html")
+        message['From'] = self._email_address
+        message['To'] = recipients[0]
+        message['Subject'] = subject
+
+        self._smtp_server.sendmail(self._email_address, recipients,
+                                   message.as_string())
