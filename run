@@ -1,0 +1,5 @@
+#! /bin/bash
+
+source ~/.brotherrc
+
+python main.py
