@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     # Retrieve every unanswered email whose subject line includes the keyword.
     # These represent reminders that have yet to be sent
-    search_criteria = '(UNANSWERED SUBJECT "' + subject_keyword + '")'
+    search_criteria = '(UNANSWERED) (SUBJECT "' + subject_keyword + '")'
     typ, data = mail_account.imap.search(None, search_criteria)
 
     # Retrieve the content of every reminder that's waiting to be sent
@@ -38,6 +38,8 @@ if __name__ == "__main__":
                 text = part.get_payload()
 
         reminder = Reminder(message['Subject'], text)
+
+        print('Checking if a reminder should be sent')
 
         if reminder.is_send_time():
             print ('Sending reminder')
