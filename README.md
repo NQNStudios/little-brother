@@ -5,4 +5,5 @@ Daemon that sends scheduled reminders by email. Written in Python.
 
 ```
 pip install markdown
+pip install parsedatetime
 ```
