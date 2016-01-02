@@ -13,9 +13,11 @@ class MailAccount(object):
 
     def __init__(self, imap_server, imap_port, smtp_server, smtp_port,
                  address, password):
+        print('Connecting to IMAP')
         # Connect to the IMAP server
         self._imap_server = imaplib.IMAP4_SSL(imap_server, imap_port)
         # Connect to the SMTP server
+        print('Connecting to SMTP')
         self._smtp_server = smtplib.SMTP(smtp_server, smtp_port)
         self._smtp_server.ehlo()
         self._smtp_server.starttls()
