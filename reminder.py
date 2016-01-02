@@ -1,15 +1,16 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+import dateutil.parser
 import parsedatetime as pdt
 
 
 class Reminder(object):
     ''' Represents a reminder that needs to be sent after a specific time '''
 
-    def __init__(self, subject, text):
+    def __init__(self, subject, text, date):
         ''' Construct a Reminder from the plaintext body of an email '''
 
         # Save a copy of the current time
-        self._now = datetime.now()
+        self._now = dateutil.parser.parse(date)
 
         # Split the reminder body by line breaks to get timing information from
         # the first line
@@ -31,7 +32,7 @@ class Reminder(object):
             self._text += line + '\r\n'
 
     def is_send_time(self):
-        return self._now - self._send_time > timedelta(0)
+        return datetime.utcnow() > self._send_time
 
     def send(self, mail_account, recipient):
         mail_account.send_message([recipient], self._subject, self._text)

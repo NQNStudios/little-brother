@@ -37,7 +37,7 @@ if __name__ == "__main__":
             if part.get_content_type() == 'text/plain':
                 text = part.get_payload()
 
-        reminder = Reminder(message['Subject'], text)
+        reminder = Reminder(message['Subject'], text, message['Date'])
 
         print('Checking if a reminder should be sent')
 
