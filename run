@@ -2,4 +2,4 @@
 
 source ~/.brotherrc
 
-python main.py
+python ~/little-brother/main.py
