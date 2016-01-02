@@ -24,6 +24,9 @@ class Reminder(object):
         self._text = ''
 
         # Skip the line with send time and a blank line following
+        if len(lines[1]) != 0:
+            self._text += lines[1] + '\r\n'
+
         for line in lines[2:]:
             self._text += line + '\r\n'
 
