@@ -27,11 +27,16 @@ class Reminder(object):
         self._subject = subject
         self._text = ''
 
-        # Skip the line with send time and a blank line following
-        if len(lines[1]) != 0:
-            self._text += lines[1] + '\r\n'
+        # Skip line with send time and all blank lines preceding the message
+        skipped_blanks = False
 
-        for line in lines[2:]:
+        for line in lines[1:]:
+            if not skipped_blanks:
+                if len(line) == 0:
+                    continue
+                else:
+                    skipped_blanks = True
+
             self._text += line + '\r\n'
 
     def is_send_time(self):
