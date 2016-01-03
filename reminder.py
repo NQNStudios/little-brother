@@ -1,5 +1,5 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
+from tzlocal import get_localzone
 import dateutil.parser
 import parsedatetime as pdt
 
@@ -10,10 +10,10 @@ class Reminder(object):
     def __init__(self, subject, text, date):
         ''' Construct a Reminder from the plaintext body of an email '''
 
-        self._utc_offset = datetime.now().utcoffset()
+        self._tzinfo = get_localzone()
 
         # Save a copy of the current time
-        self._now = dateutil.parser.parse(date)
+        self._now = dateutil.parser.parse(date).astimezone(self._tzinfo)
 
         # Split the reminder body by line breaks to get timing information from
         # the first line
@@ -21,7 +21,7 @@ class Reminder(object):
 
         # Parse the date and time to send the reminder
         cal = pdt.Calendar()
-        self._send_time = cal.parseDT(lines[0], self._now)[0]
+        self._send_time = self._tzinfo.localize(cal.parseDT(lines[0], self._now)[0])
 
         # Save the content of the reminder
         self._subject = subject
@@ -40,7 +40,10 @@ class Reminder(object):
             self._text += line + '\r\n'
 
     def is_send_time(self):
-        return datetime.utcnow() > self._send_time + self._utc_offset
+        print('Checking if reminder ' + self._subject + ' should be sent')
+
+        return self._tzinfo.localize(datetime.datetime.now()) > self._send_time
 
     def send(self, mail_account, recipient):
+        print ('Sending reminder')
         mail_account.send_message([recipient], self._subject, self._text)
