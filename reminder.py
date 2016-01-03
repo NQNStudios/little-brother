@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 import dateutil.parser
 import parsedatetime as pdt
 
@@ -8,6 +9,8 @@ class Reminder(object):
 
     def __init__(self, subject, text, date):
         ''' Construct a Reminder from the plaintext body of an email '''
+
+        self._utc_offset = datetime.now().utcoffset()
 
         # Save a copy of the current time
         self._now = dateutil.parser.parse(date)
@@ -32,7 +35,7 @@ class Reminder(object):
             self._text += line + '\r\n'
 
     def is_send_time(self):
-        return datetime.utcnow() > self._send_time
+        return datetime.utcnow() > self._send_time + self._utc_offset
 
     def send(self, mail_account, recipient):
         mail_account.send_message([recipient], self._subject, self._text)
