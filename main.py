@@ -39,10 +39,7 @@ if __name__ == "__main__":
 
         reminder = Reminder(message['Subject'], text, message['Date'])
 
-        print('Checking if a reminder should be sent')
-
         if reminder.is_send_time():
-            print ('Sending reminder')
             reminder.send(mail_account, recipient)
 
             # Mark that the reminder has been sent by flagging as ANSWERED
