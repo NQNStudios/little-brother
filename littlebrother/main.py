@@ -1,6 +1,6 @@
 import os
 from email import email
-from mail_account import MailAccount
+from mailaccount import MailAccount
 from reminder import Reminder
 
 if __name__ == "__main__":
