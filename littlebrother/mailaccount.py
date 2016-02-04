@@ -51,12 +51,26 @@ class MailAccount(object):
         """ The bot's connected IMAP server """
         return self._imap_server
 
-    def send_message(self, recipients, subject, body_markdown):
+    def send_message_plain(self, recipients, subject, body_text):
+        """ Send a markdown-formatted email to the specified list of addresses
+        """
+
+        # Construct the message as a MIMEText
+        message = MIMEText(body_text, "plain")
+        message['From'] = self._email_address
+        message['To'] = recipients[0]
+        message['Subject'] = subject
+
+        self._smtp_server.sendmail(self._email_address, recipients,
+                                   message.as_string())
+
+    def send_message_markdown(self, recipients, subject, body_markdown):
         """ Send a markdown-formatted email to the specified list of addresses
         """
 
         # Convert the markdown to HTML
         body_html = markdown.markdown(body_markdown)
+
         # Construct the message as a MIMEText
         message = MIMEText(body_html, "html")
         message['From'] = self._email_address

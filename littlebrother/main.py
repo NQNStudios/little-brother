@@ -33,11 +33,14 @@ if __name__ == "__main__":
     for num, message in messages.iteritems():
         text = ''
 
-        for part in message.get_payload():
-            if part.get_content_type() == 'text/plain':
-                text = part.get_payload()
+        if isinstance(message.get_payload(), basestring):
+            text = message.get_payload()
+        else:
+            for part in message.get_payload():
+                if part.get_content_type() == 'text/plain':
+                    text = part.get_payload()
 
-        reminder = Reminder(message['Subject'], text, message['Date'])
+        reminder = Reminder.parse(message['Subject'], text, message['Date'])
 
         if reminder.is_send_time():
             reminder.send(mail_account, recipient)
