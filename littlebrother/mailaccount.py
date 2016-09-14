@@ -3,6 +3,7 @@ import imaplib
 import smtplib
 import markdown
 from email.mime.text import MIMEText
+from email.header import Header
 
 
 class MailAccount(object):
@@ -56,10 +57,10 @@ class MailAccount(object):
         """
 
         # Construct the message as a MIMEText
-        message = MIMEText(body_text, "plain")
+        message = MIMEText(body_text.encode('utf-8'), 'plain', 'utf-8')
         message['From'] = self._email_address
         message['To'] = recipients[0]
-        message['Subject'] = subject
+        message['Subject'] = Header(subject.encode('utf-8'), 'utf-8')
 
         self._smtp_server.sendmail(self._email_address, recipients,
                                    message.as_string())
