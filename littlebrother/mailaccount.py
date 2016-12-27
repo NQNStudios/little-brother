@@ -73,10 +73,10 @@ class MailAccount(object):
         body_html = markdown.markdown(body_markdown)
 
         # Construct the message as a MIMEText
-        message = MIMEText(body_html, "html")
+        message = MIMEText(body_html.encode('utf-8'), "html", 'utf-8')
         message['From'] = self._email_address
         message['To'] = recipients[0]
-        message['Subject'] = subject
+        message['Subject'] = Header(subject.encode('utf-8'), 'utf-8')
 
         self._smtp_server.sendmail(self._email_address, recipients,
                                    message.as_string())
